@@ -71,8 +71,8 @@ if [[ $(wc -l </var/www/html/openWB/ramdisk/$outputname) -ge 5 ]]; then
 		echo $APhase3 > /var/www/html/openWB/ramdisk/llas23
 		echo $watt > /var/www/html/openWB/ramdisk/llaktuells2
 		echo $kWhCounter > /var/www/html/openWB/ramdisk/llkwhs2
-		echo $boolPlugStat > /var/www/html/openWB/ramdisk/plugstats2
-		echo $boolChargeStat > /var/www/html/openWB/ramdisk/chargestats2
+		echo $boolPlugStat > /var/www/html/openWB/ramdisk/plugstatlp3
+		echo $boolChargeStat > /var/www/html/openWB/ramdisk/chargestatlp3
 
 	fi
 	if (( chargep > "3" ));then
@@ -94,6 +94,10 @@ if [[ $(wc -l </var/www/html/openWB/ramdisk/$outputname) -ge 5 ]]; then
 	fi
 
 	mosquitto_pub -h $ip -r -t openWB/set/isss/parentWB -m "$myipaddress"
-
+        mosquitto_pub -h $ip -r -t openWB/set/isss/parentWB -m "$myipaddress"
+        openwbModulePublishState "LP" 0 "Kein Fehler" $chargep
+else
+        openwbModulePublishState "LP" 1 "Keine Daten vom LP erhalten, IP Korrekt?" $chargep
+        openwbDebugLog "MAIN" 0 "Keine Daten von externe openWB LP $chargep empfangen"
 fi
 

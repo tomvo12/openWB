@@ -69,7 +69,7 @@ var graphNextYear = Number(graphDate) + 1;
 var monthsInYear = 12;
 
 var clientuid = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
-var client = new Messaging.Client(location.host, 9001, clientuid);
+var client = new Messaging.Client(location.hostname, 9001, clientuid);
 
 function handlevar(mqttmsg, mqttpayload, mqtttopic, htmldiv) {
 	if ( mqttmsg.match( /^openWB\/config\/get\/SmartHome\/Devices\/[1-9][0-9]*\/device_name$/i ) ) {
@@ -710,7 +710,7 @@ function loadgraph() {
 						sensitivity: 0.01
 
 					}
-					}
+				}
 			},
 			responsive: true,
 			maintainAspectRatio: false,
@@ -721,13 +721,21 @@ function loadgraph() {
 			legend: {
 				display: boolDisplayLegend,
 				position: 'bottom',
+				labels: {
+					// middle grey, opacy = 100% (visible)
+					fontColor: "rgba(153, 153, 153, 1)",
+				}
 			},
 			title: {
 				display: false
 			},
 			scales: {
 				xAxes: [{
-					type: 'category'
+					type: 'category',
+					ticks: {
+						//source: 'data',
+						fontColor: "rgba(153, 153, 153, 1)"  // middle grey, opacy = 100% (visible)
+					}
 				}],
 				yAxes: [{
 					type: 'linear',
@@ -739,7 +747,15 @@ function loadgraph() {
 						labelString: 'Energie [kWh]',
 						// middle grey, opacy = 100% (visible)
 						fontColor: "rgba(153, 153, 153, 1)"
-					}
+					},
+					gridLines: {
+						// light grey, opacy = 100% (visible)
+						color: "rgba(204, 204, 204, 1)",
+					},
+					ticks: {
+						// middle grey, opacy = 100% (visible)
+						fontColor: "rgba(153, 153, 153, 1)"
+					},
 				}]
 			}
 		}
@@ -754,7 +770,7 @@ function loadgraph() {
 			monthstr = monthstr.substring(0,3); // get month in short description
 			var month = monthName.indexOf(monthstr);
 			var jumpToDate = String(graphYear) + '-' + String(month).padStart(2, '0');  // month with leading zero
-			window.location.href = "monthly.php?date=" + jumpToDate;
+			window.location.href = "logging/monthly.php?date=" + jumpToDate;
 	 	}
 	});
 

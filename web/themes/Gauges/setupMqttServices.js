@@ -44,7 +44,8 @@ var topicsToSubscribe = [
 	["openWB/config/get/SmartHome/Devices/8/device_name", 1],
 	["openWB/config/get/SmartHome/Devices/9/device_name", 1],
 
-	// awattar topcis
+	// etprovider topcis
+	["openWB/global/ETProvider/modulePath", 1],
 	["openWB/global/awattar/boolAwattarEnabled", 1],
 	["openWB/global/awattar/MaxPriceForCharging", 1],
 	["openWB/global/awattar/ActualPriceForCharging", 1],
@@ -346,12 +347,12 @@ var options = {
 	},
 	//Gets Called if the connection could not be established
 	onFailure: function (message) {
-		setTimeout(function() { client.conect(options); }, 5000);
+		setTimeout(function() { client.connect(options); }, 5000);
 	}
 };
 
 var clientuid = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 5);
-var client = new Messaging.Client(location.host, 9001, clientuid);
+var client = new Messaging.Client(location.hostname, 9001, clientuid);
 
 $(document).ready(function(){
 	client.connect(options);

@@ -38,7 +38,8 @@ var topicsToSubscribe = [
 	// pv topics
 	["openWB/pv/W", 1],
 	["openWB/pv/DailyYieldKwh", 1],
-	["openWB/pv/boolPVConfigured", 1],
+	["openWB/pv/1/boolPVConfigured", 1],
+	["openWB/pv/2/boolPVConfigured", 1],
 	// evu topics
 	["openWB/evu/W", 1],
 	// lp topics
@@ -244,6 +245,10 @@ var options = {
 	useSSL: isSSL,
 	//Gets Called if the connection has sucessfully been established
 	onSuccess: function () {
+		$('#backend .connectionState').text("verbunden");
+		// $('#backend .reloadBtn').addClass('hide');
+		$('#backend .counter').text(retries+1);
+		console.log("connected, resetting counter");
 		retries = 0;
 		topicsToSubscribe.forEach((topic) => {
 			client.subscribe(topic[0], {qos: 0});
@@ -251,12 +256,17 @@ var options = {
 	},
 	//Gets Called if the connection could not be established
 	onFailure: function (message) {
-		setTimeout(function() { client.conect(options); }, 5000);
+		retries = retries + 1;
+		console.log("connection failed, incrementing counter: " + retries);
+		$('#backend .connectionState').text("getrennt");
+		// $('#backend .reloadBtn').removeClass('hide');
+		$('#backend .counter').text(retries+1);
+		setTimeout(function() { client.connect(options); }, 5000);
 	}
 };
 
 var clientuid = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 5);
-var client = new Messaging.Client(location.host, 9001, clientuid);
+var client = new Messaging.Client(location.hostname, 9001, clientuid);
 
 $(document).ready(function(){
 	client.connect(options);
@@ -265,7 +275,10 @@ $(document).ready(function(){
 
 //Gets  called if the websocket/mqtt connection gets disconnected for any reason
 client.onConnectionLost = function (responseObject) {
-	client.connect(options);
+	$('#backend .connectionState').text("getrennt");
+	$('#backend .reloadBtn').removeClass('hide');
+	$('#backend .counter').text(retries+1);
+	setTimeout(function() { client.connect(options); }, 5000);
 };
 //Gets called whenever you receive a message
 client.onMessageArrived = function (message) {

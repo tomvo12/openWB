@@ -430,7 +430,7 @@ function processSystemMessages(mqttmsg, mqttpayload) {
 	} else if ( mqttmsg == 'openWB/system/IpAddress') {
 		$('.systemIpAddress').text(mqttpayload);
 	} else if ( mqttmsg == 'openWB/system/wizzardDone' ) {
-		if( mqttpayload == '100' ){
+		if( mqttpayload > 99 ){
 			$("#wizzardModal").modal("hide");
 		} else {
 			$("#wizzardModal").modal("show");
@@ -447,6 +447,8 @@ function processSystemMessages(mqttmsg, mqttpayload) {
 
 }
 
+var pv1 = 0;
+var pv2 = 0;
 function processPvMessages(mqttmsg, mqttpayload) {
 	// processes mqttmsg for topic openWB/pv
 	// called by handlevar
@@ -484,8 +486,14 @@ function processPvMessages(mqttmsg, mqttpayload) {
 			break;
 		}
 	}
-	else if ( mqttmsg == 'openWB/pv/boolPVConfigured' ) {
-		if ( mqttpayload == 1 ) {
+	else if ( mqttmsg.match(/^openWB\/pv\/[1-2]+\/boolPVConfigured$/i) ) {
+		if (mqttmsg == 'openWB/pv/1/boolPVConfigured') {
+			pv1 = mqttpayload;
+		} else {
+			pv2 = mqttpayload;
+		}
+
+		if ( (pv1 + pv2) > 0 ) {
 			// if pv is configured, show info-cards
 			$('.pv').removeClass('hide');
 			// update sparklines
@@ -661,7 +669,7 @@ function processLpMessages(mqttmsg, mqttpayload) {
 		}
 	}
 	else if ( mqttmsg.match( /^openwb\/lp\/[1-9][0-9]*\/boolsocmanual$/i ) ) {
-		console.log(mqttmsg+': '+mqttpayload);
+		// console.log(mqttmsg+': '+mqttpayload);
 		// manual soc-module configured for respective charge point
 		var index = getIndex(mqttmsg);  // extract number between two / /
 		var parent = $('[data-lp="' + index + '"]');  // get parent row element for charge point

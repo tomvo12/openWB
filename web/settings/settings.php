@@ -25,38 +25,19 @@
 		<link rel="stylesheet" type="text/css" href="css/bootstrap-4.4.1/bootstrap.min.css">
 		<!-- Normalize -->
 		<link rel="stylesheet" type="text/css" href="css/normalize-8.0.1.css">
+		<!-- Bootstrap Selectpicker-->
+		<link rel="stylesheet" type="text/css" href="css/bootstrap-selectpicker/bootstrap-select.min.css">
 
 		<link rel="stylesheet" type="text/css" href="fonts/font-awesome-5.8.2/css/all.css">
 		<!-- include settings-style -->
-		<link rel="stylesheet" type="text/css" href="settings/settings_style.css">
+		<link rel="stylesheet" type="text/css" href="css/settings_style.css">
 
 		<!-- important scripts to be loaded -->
-		<script src="js/jquery-3.4.1.min.js"></script>
+		<script src="js/jquery-3.6.0.min.js"></script>
 		<script src="js/bootstrap-4.4.1/bootstrap.bundle.min.js"></script>
+		<script src="js/bootstrap-selectpicker/bootstrap-select.min.js"></script>
 		<!-- load helper functions -->
-		<script src = "settings/helperFunctions.js?ver=20201231" ></script>
-		<script>
-			function getCookie(cname) {
-				var name = cname + '=';
-				var decodedCookie = decodeURIComponent(document.cookie);
-				var ca = decodedCookie.split(';');
-				for(var i = 0; i <ca.length; i++) {
-					var c = ca[i];
-					while (c.charAt(0) == ' ') {
-						c = c.substring(1);
-					}
-					if (c.indexOf(name) == 0) {
-						return c.substring(name.length, c.length);
-					}
-				}
-				return '';
-			}
-			var themeCookie = getCookie('openWBTheme');
-			// include special Theme style
-			if( '' != themeCookie ){
-				$('head').append('<link rel="stylesheet" href="themes/' + themeCookie + '/settings.css?v=20200801">');
-			}
-		</script>
+		<script src = "settings/helperFunctions.js?ver=20210329" ></script>
 	</head>
 
 	<body>
@@ -74,7 +55,7 @@
 
 		<div role="main" class="container" style="margin-top:20px">
 			<h1>Allgemeine Einstellungen</h1>
-			<form action="./tools/saveconfig.php" method="POST">
+			<form action="./settings/saveconfig.php" method="POST">
 
 				<!-- Übergreifendes -->
 				<div class="card border-secondary">
@@ -84,10 +65,10 @@
 								<div class="col-4">openWB ist nur ein Ladepunkt</div>
 								<div class="col">
 									<div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
-										<label class="btn btn-outline-info<?php if($isssold == 0) echo " active" ?>">
+										<label class="btn btn-sm btn-outline-info<?php if($isssold == 0) echo " active" ?>">
 											<input type="radio" name="isss" id="isssOff" value="0"<?php if($isssold == 0) echo " checked=\"checked\"" ?>>Nein
 										</label>
-										<label class="btn btn-outline-info<?php if($isssold == 1) echo " active" ?>">
+										<label class="btn btn-sm btn-outline-info<?php if($isssold == 1) echo " active" ?>">
 											<input type="radio" name="isss" id="isssOn" value="1"<?php if($isssold == 1) echo " checked=\"checked\"" ?>>Ja
 										</label>
 									</div>
@@ -98,7 +79,7 @@
 					<div class="card-body">
 						<div class="card-text alert alert-info">
 							Wird hier Ja gewählt ist diese openWB nur ein Ladepunkt und übernimmt keine eigene Regelung.
-							Hier ist Ja zu wählen wenn bereits eine openWB vorhanden ist und diese nur ein weiterer Ladepunkt der vorhandenen openWB sein soll.
+							Hier ist Ja zu wählen wenn, bereits eine openWB vorhanden ist und diese nur ein weiterer Ladepunkt der vorhandenen openWB sein soll.
 							<span class="text-danger">Alle in dieser openWB getätigten Einstellungen werden NICHT beachtet.</span>
 							An der Haupt openWB wird als Ladepunkt "externe openWB" gewählt und die IP Adresse eingetragen.
 						</div>
@@ -135,19 +116,19 @@
 					</script>
 				</div>
 
-				<!-- Awattar -->
+				<!-- electricity tariff providers -->
 				<div class="card border-secondary">
 					<div class="card-header bg-secondary">
 						<div class="form-group mb-0">
 							<div class="form-row vaRow mb-0">
-								<div class="col-4">Awattar</div>
+								<div class="col-4">Stromanbieter</div>
 								<div class="col">
 									<div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
-										<label class="btn btn-sm btn-outline-info<?php if($awattaraktivold == 0) echo " active" ?>">
-											<input type="radio" name="awattaraktiv" id="awattaraktivOff" value="0"<?php if($awattaraktivold == 0) echo " checked=\"checked\"" ?>>Aus
+										<label class="btn btn-sm btn-outline-info<?php if($etprovideraktivold == 0) echo " active" ?>">
+											<input type="radio" name="etprovideraktiv" id="etprovideraktivOff" value="0"<?php if($etprovideraktivold == 0) echo " checked=\"checked\"" ?>>Aus
 										</label>
-										<label class="btn btn-sm btn-outline-info<?php if($awattaraktivold == 1) echo " active" ?>">
-											<input type="radio" name="awattaraktiv" id="awattaraktivOn" value="1"<?php if($awattaraktivold == 1) echo " checked=\"checked\"" ?>>An
+										<label class="btn btn-sm btn-outline-info<?php if($etprovideraktivold == 1) echo " active" ?>">
+											<input type="radio" name="etprovideraktiv" id="etprovideraktivOn" value="1"<?php if($etprovideraktivold == 1) echo " checked=\"checked\"" ?>>An
 										</label>
 									</div>
 								</div>
@@ -156,37 +137,289 @@
 					</div>
 					<div class="card-body">
 						<div class="card-text alert alert-info">
-							Ermöglicht Laden nach Strompreis. Hierfür benötigt wird der Awattar Hourly Tarif sowie ein Discovergy Zähler. Die Awattar Funktion ist nur im SofortLaden Modus aktiv!
+							Ermöglicht Laden nach Strompreis. Hierfür wird ein unterstützter Anbieter benötigt. Die Funktion ist nur im Modus Sofortladen aktiv!
 						</div>
-						<div id="awattardiv" class="hide">
-							<div class="form-group">
-								<div class="form-row mb-1">
-									<label for="awattarlocation" class="col-md-4 col-form-label">Land</label>
-									<div class="col">
-										<select name="awattarlocation" id="awattarlocation" class="form-control">
-											<option <?php if($awattarlocationold == "de") echo "selected" ?> value="de">Deutschland</option>
-											<option <?php if($awattarlocationold == "at") echo "selected" ?> value="at">Österreich</option>
-										</select>
+						<div class="form-group mb-0" id="etproviderondiv">
+							<div class="form-row mb-1">
+								<label for="etprovider" class="col-md-4 col-form-label">Anbieter</label>
+								<div class="col">
+									<select name="etprovider" id="etprovider" class="form-control">
+										<option <?php if($etproviderold == "et_awattar") echo "selected" ?> value="et_awattar">aWATTar</option>
+										<option <?php if($etproviderold == "et_tibber") echo "selected" ?> value="et_tibber">Tibber</option>
+									</select>
+								</div>
+							</div>
+							<div id="awattardiv" class="hide">
+								<div class="form-group">
+									<div class="form-row mb-1">
+										<label for="awattarlocation" class="col-md-4 col-form-label">Land</label>
+										<div class="col">
+											<select name="awattarlocation" id="awattarlocation" class="form-control">
+												<option <?php if($awattarlocationold == "de") echo "selected" ?> value="de">Deutschland</option>
+												<option <?php if($awattarlocationold == "at") echo "selected" ?> value="at">Österreich</option>
+											</select>
+										</div>
 									</div>
 								</div>
 							</div>
+							<div id="tibberdiv" class="hide">
+								<script src = "../modules/et_tibber/tibber.js?ver=20210128" ></script>
+								<div class="card-text alert alert-primary">
+									<p>
+										Ihren persönlichen Tibber-Token erhalten Sie über die <a href="https://developer.tibber.com/explorer" target="_blank">Tibber-Developer-Seite</a>.
+									</p>
+									<p>
+										Behandeln Sie Ihren Token wie ein Passwort, da sich darüber auch persönliche Daten aus Ihrem Tibber-Account abfragen lassen! Die Home-ID können Sie (wenn bekannt)
+										in das Eingebafeld selbst eintragen oder <b>nach Eingabe Ihres Token</b> durch Klick auf den Button von der openWB ermitteln lassen. Unerlaubte Zeichen werden aus dem Token und der Home-ID automatisch gelöscht.
+									</p>
+									<p>
+										Bei einer fehlerhaften Tibber-Abfrage wird der Strompreis von der openWB bis zur nächsten erfolgreichen Abfrage mit 99.99ct/kWh festgelegt.
+									</p>
+									Bitte verifizieren Sie die Eingabe, bevor Sie die Einstellungen speichern.
+								</div>
+								<div class="form-group">
+									<div class="form-row mb-1">
+										<label for="tibbertoken" class="col-md-4 col-form-label">Tibber-Token</label>
+										<div class="col">
+											<input class="form-control" type="text" name="tibbertoken" id="tibbertoken" value="<?php echo $tibbertokenold; ?>">
+										</div>
+									</div>
+									<div class="form-row mb-1">
+										<label for="tibberhomeid" class="col-md-4 col-form-label">Home-ID</label>
+										<div class="col">
+											<input class="form-control" type="text" name="tibberhomeid" id="tibberhomeid" value="<?php echo $tibberhomeidold; ?>">
+										</div>
+									</div>
+								</div>
+								<div class="row justify-content-center">
+									<button id="getTibberHomeIdBtn" type="button" class="btn btn-primary m-2">Home-ID ermitteln</button>
+									<button id="verifyTibberBtn" type="button" class="btn btn-secondary m-2">Tibber-Daten verifizieren</button>
+								</div>
+								<script>
+									$(document).ready(function(){
+
+										$('#tibberHomesDropdown').selectpicker();
+
+										$('#tibbertoken').change(function(){
+											// after change of token check if no invalid chars were entered
+											var currentVal = $(this).val();
+											// !Attention! Until now there are only characters 0-9 a-Z A-Z _ and - in token.
+											// Function may be needed to be adjusted in future
+											newVal = currentVal.trim().replace(/[^\w-]/gi,'');
+											$(this).val(newVal);
+										});
+
+										$('#tibberhomeid').change(function(){
+											// after change of token check if no invalid chars were entered
+											var currentVal = $(this).val();
+											// !Attention! Until now there are only characters 0-9 a-Z A-Z _ and - in in homeID.
+											// Function may be needed to be adjusted in future
+											newVal = currentVal.trim().replace(/[^\w-]/gi,'');
+											$(this).val(newVal);
+										});
+
+										$('#tibberhomeIdModalOkBtn').click(function(){
+											$('#tibberhomeid').val($('#tibberHomesDropdown option:selected').val());
+										});
+
+										$('#getTibberHomeIdBtn').click(function(){
+											const tibberQuery = '{ "query": "{viewer {homes{id address{address1 address2 address3 postalCode city}}}}" }';
+											readTibberAPI($('#tibbertoken').val(), tibberQuery)
+												.then((queryData) => {
+													var homes = queryData.data.viewer.homes;
+													// clear selectpicker
+													$('#tibberHomesDropdown').empty();
+													// and fill with received address(es)
+													$(homes).each(function() {
+														var homeID = this.id;
+														var addressStr = this.address.address1;
+														if ( this.address.address2 !== null ) {
+															addressStr = addressStr + ', ' + this.address.address2;
+														}
+														if ( this.address.address3 !== null ) {
+															addressStr = addressStr + ', ' + this.address.address3;
+														}
+														addressStr = addressStr + ', ' + this.address.postalCode + ' ' + this.address.city;
+														$('#tibberHomesDropdown').append('<option value="' + homeID + '">' + addressStr + '</option>');
+    												});
+													$('#tibberhomeIdModal').find('.modal-header').removeClass('bg-danger');
+													$('#tibberhomeIdModal').find('.modal-header').addClass('bg-success');
+													$('#tibberhomeIdModalOkBtn').show();
+													$('#tibberModalHomeIdErrorDiv').hide();
+													$('#tibberModalSelectHomeIdDiv').show();
+													// order of the following selectpicker commands is crucial for correct functionality!!
+													// make sure formerly hidden element is now enabled,
+													$('#tibberHomesDropdown').attr('disabled',false);
+													$('#tibberHomesDropdown').selectpicker('refresh');
+													// set the selectpicker to the first option
+													$('#tibberHomesDropdown').selectpicker('val', $('#tibberHomesDropdown option:first').val());
+													// show modal with unhidden div
+													$('#tibberhomeIdModal').modal("show");
+												})
+												.catch((error) => {
+													$('#tibberhomeIdModal').find('.modal-header').removeClass('bg-success');
+													$('#tibberhomeIdModal').find('.modal-header').addClass('bg-danger');
+													$('#tibberhomeIdModalOkBtn').hide();
+													$('#tibberModalHomeIdErrorDiv').find('span').text(error);
+													//$('#tibberErrorText').text(error);
+													$('#tibberModalHomeIdErrorDiv').show();
+													$('#tibberModalSelectHomeIdDiv').hide();
+													$('#tibberhomeid').val('');
+													$('#tibberhomeIdModal').modal("show");
+								  				})
+										});
+
+										$('#verifyTibberBtn').click(function(){
+											const tibberQuery = '{ "query": "{viewer {name home(id:\\"' + $('#tibberhomeid').val() + '\\") {address {address1}}}}" }';
+											readTibberAPI($('#tibbertoken').val(), tibberQuery)
+												.then((queryData) => {
+													$('#tibberVerifyModal').find('.modal-header').removeClass('bg-danger');
+													$('#tibberVerifyModal').find('.modal-header').addClass('bg-success');
+													$('#tibberVerifyOkBtn').show();
+													$('#tibberVerifyModal').find('.btn-danger').hide();
+													$('#tibberModalVerifyErrorDiv').hide();
+													$('#tibberModalVerifySuccessDiv').show();
+													var name = queryData.data.viewer.name;
+													$('#tibberModalVerifySuccessDiv').find('span').text(name);
+													$('#tibberVerifyModal').modal("show");
+												})
+												.catch((error) => {
+													$('#tibberVerifyModal').find('.modal-header').removeClass('bg-success');
+													$('#tibberVerifyModal').find('.modal-header').addClass('bg-danger');
+													$('#tibberVerifyOkBtn').hide();
+													$('#tibberVerifyModal').find('.btn-danger').show();
+													$('#tibberModalVerifyErrorDiv').find('span').text(error);
+													$('#tibberModalVerifyErrorDiv').show();
+													$('#tibberModalVerifySuccessDiv').hide();
+													$('#tibberhomeid').val('');
+													$('#tibberVerifyModal').modal("show");
+												})
+										});
+
+									});  // end document ready
+								</script>
+
+								<!-- modal Tibber-homeID-window -->
+								<div class="modal fade" id="tibberhomeIdModal">
+									<div class="modal-dialog">
+										<div class="modal-content">
+
+											<!-- modal header -->
+											<div class="modal-header">
+												<h4 class="modal-title">Tibber Home-ID ermitteln</h4>
+											</div>
+
+											<!-- modal body -->
+											<div class="modal-body">
+												<div id="tibberModalHomeIdErrorDiv" class="row justify-content-center hide">
+													<div class="col">
+														<p>
+															<span></span>
+														</p>
+														Home-ID-Ermittlung fehlgeschlagen.
+													</div>
+												</div>
+
+												<div id="tibberModalSelectHomeIdDiv" class="row justify-content-center hide">
+													<div class="col">
+														<div class="form-group">
+														<label for="tibberHomesDropdown">Bitte wählen Sie eine Adresse:</label>
+														<select class="form-control selectpicker" id="tibberHomesDropdown">
+														</select>
+													  </div>
+													</div>
+												</div>
+
+											</div>
+
+											<!-- modal footer -->
+											<div class="modal-footer d-flex justify-content-center">
+												<button type="button" class="btn btn-success" data-dismiss="modal" id="tibberhomeIdModalOkBtn">Home-ID übernehmen</button>
+												<button type="button" class="btn btn-danger" data-dismiss="modal">Abbruch</button>
+											</div>
+
+										</div>
+									</div>
+								</div>  <!-- end modal Tibber-homeID-window -->
+
+								<!-- modal Tibber-verify-data-window -->
+								<div class="modal fade" id="tibberVerifyModal">
+									<div class="modal-dialog">
+										<div class="modal-content">
+
+											<!-- modal header -->
+											<div class="modal-header">
+												<h4 class="modal-title">Tibber-Daten verifizieren</h4>
+											</div>
+
+											<!-- modal body -->
+											<div class="modal-body">
+												<div id="tibberModalVerifyErrorDiv" class="row justify-content-center hide">
+													<div class="col">
+														<p>
+															<span></span>
+														</p>
+														Verifizierung der Tibber-Daten fehlgeschlagen.
+													</div>
+												</div>
+
+												<div id="tibberModalVerifySuccessDiv" class="row justify-content-center hide">
+													<div class="col">
+														<p>
+															Verifizierung der Tibber-Daten erfolgreich!
+														</p>
+														Registrierter Account-Inhaber: <span></span>
+													</div>
+												</div>
+											</div>
+
+											<!-- modal footer -->
+											<div class="modal-footer d-flex justify-content-center">
+												<button type="button" class="btn btn-success" data-dismiss="modal" id="tibberVerifyOkBtn">OK</button>
+												<button type="button" class="btn btn-danger" data-dismiss="modal">Abbruch</button>
+											</div>
+
+										</div>
+									</div>
+								</div>  <!-- end modal Tibber-verify-data-window -->
+
+							</div>
 						</div>
 					</div>
+
 					<script>
 						$(function() {
-							function visibility_awattaraktiv() {
-								if($('#awattaraktivOff').prop("checked")) {
-									hideSection('#awattardiv');
+							function visibility_electricityprovider() {
+								if($('#etprovideraktivOff').prop("checked")) {
+									hideSection('#etproviderondiv');
 								} else {
-									showSection('#awattardiv');
+									showSection('#etproviderondiv');
 								}
 							}
 
-							$('input[type=radio][name=awattaraktiv]').change(function(){
-								visibility_awattaraktiv();
+							function visibility_electricitytariff() {
+								hideSection('#awattardiv');
+								hideSection('#tibberdiv');
+								switch ($('#etprovider').val()) {
+									case 'et_awattar':
+										showSection('#awattardiv');
+									break;
+									case 'et_tibber':
+										showSection('#tibberdiv');
+									break;
+								}
+							}
+
+							$('#etprovider').change(function(){
+								visibility_electricitytariff();
 							});
 
-							visibility_awattaraktiv();
+							$('input[type=radio][name=etprovideraktiv]').change(function(){
+								visibility_electricityprovider();
+							});
+
+							visibility_electricitytariff();
+							visibility_electricityprovider();
 						});
 					</script>
 				</div>
@@ -474,7 +707,7 @@
 									</div>
 								</div>
 								<div class="form-row mb-1">
-									<label for="durchslp1" class="col-md-4 col-form-label">Durchschnittsverbrauch in kWh</label>
+									<label for="durchslp1" class="col-md-4 col-form-label">Durchschnittsverbrauch in kWh/100km</label>
 									<div class="col">
 										<input class="form-control" type="number" min="1" step="0.1" name="durchslp1" id="durchslp1" value="<?php echo $durchslp1old ?>">
 										<span class="form-text small">Gültige Werte xx.xx, z.B. 14.5. Dient zur Berechnung der geladenen Strecke.</span>
@@ -527,7 +760,7 @@
 									</div>
 								</div>
 								<div class="form-row mb-1">
-									<label for="durchslp2" class="col-md-4 col-form-label">Durchschnittsverbrauch in kWh</label>
+									<label for="durchslp2" class="col-md-4 col-form-label">Durchschnittsverbrauch in kWh/100km</label>
 									<div class="col">
 										<input class="form-control" type="number" min="1" step=".1" name="durchslp2" id="durchslp2" value="<?php echo $durchslp2old ?>">
 										<span class="form-text small">Gültige Werte xx.xx, z.B. 14.5. Dient zur Berechnung der geladenen Strecke.</span>
@@ -551,7 +784,7 @@
 									</div>
 								</div>
 								<div class="form-row mb-1">
-									<label for="durchslp3" class="col-md-4 col-form-label">Durchschnittsverbrauch in kWh</label>
+									<label for="durchslp3" class="col-md-4 col-form-label">Durchschnittsverbrauch in kWh/100km</label>
 									<div class="col">
 										<input class="form-control" type="number" min="1" step=".1" name="durchslp3" id="durchslp3" value="<?php echo $durchslp3old ?>">
 										<span class="form-text small">Gültige Werte xx.xx, z.B. 14.5. Dient zur Berechnung der geladenen Strecke.</span>
@@ -610,6 +843,17 @@
 									</div>
 								</div>
 								<div class="form-row mb-1">
+									<label class="col-md-4 col-form-label">Nachtladen</label>
+									<div class="btn-group btn-group-toggle col" data-toggle="buttons">
+										<label class="btn btn-outline-info<?php if($u1p3pnlold == 1) echo " active" ?>">
+											<input type="radio" name="u1p3pnl" id="u1p3pnl1" value="1"<?php if($u1p3pnlold == 1) echo " checked=\"checked\"" ?>>einphasig
+										</label>
+										<label class="btn btn-outline-info<?php if($u1p3pnlold == 3) echo " active" ?>">
+											<input type="radio" name="u1p3pnl" id="u1p3pnl3" value="3"<?php if($u1p3pnlold == 3) echo " checked=\"checked\"" ?>>dreiphasig
+										</label>
+									</div>
+								</div>
+								<div class="form-row mb-1">
 									<label class="col-md-4 col-form-label">Min + PV Laden</label>
 									<div class="btn-group btn-group-toggle col" data-toggle="buttons">
 										<label class="btn btn-outline-info<?php if($u1p3pminundpvold == 1) echo " active" ?>">
@@ -637,18 +881,33 @@
 												<input type="radio" name="u1p3pnurpv" id="u1p3pnurpv4" value="4"<?php if($u1p3pnurpvold == 4) echo " checked=\"checked\"" ?>>Automatikmodus
 											</label>
 										</div>
-										<span class="form-text small">Im Automatikmodus wird die PV Ladung einphasig begonnen. Ist für durchgehend 10 Minuten die Maximalstromstärke erreicht, wird die Ladung auf dreiphasige Ladung umgestellt. Ist die Ladung nur für ein Intervall unterhalb der Maximalstromstärke, beginnt der Counter für die Umschaltung erneut. Ist die Ladung im dreiphasigen Modus für 8 Minuten bei der Minimalstromstärke, wird wieder auf einphasige Ladung gewechselt.</span>
 									</div>
 								</div>
 								<div class="form-row mb-1">
-									<label class="col-md-4 col-form-label">Nachtladen</label>
-									<div class="btn-group btn-group-toggle col" data-toggle="buttons">
-										<label class="btn btn-outline-info<?php if($u1p3pnlold == 1) echo " active" ?>">
-											<input type="radio" name="u1p3pnl" id="u1p3pnl1" value="1"<?php if($u1p3pnlold == 1) echo " checked=\"checked\"" ?>>einphasig
-										</label>
-										<label class="btn btn-outline-info<?php if($u1p3pnlold == 3) echo " active" ?>">
-											<input type="radio" name="u1p3pnl" id="u1p3pnl3" value="3"<?php if($u1p3pnlold == 3) echo " checked=\"checked\"" ?>>dreiphasig
-										</label>
+									<label class="col-md-4 col-form-label">Schaltzeiten Automatikmodus</label>
+									<div class="col">
+										<div class="form-row vaRow mb-1">
+											<label for="u1p3schaltparam" class="col-2 col-form-label valueLabel" suffix="Min"><?php echo $u1p3schaltparamold; ?> Min</label>
+											<div class="col-10">
+												<input type="range" class="form-control-range rangeInput" name="u1p3schaltparam" id="u1p3schaltparam" min="1" max="15" step="1" value="<?php echo $u1p3schaltparamold; ?>">
+											</div>
+										</div>
+										<span class="form-text small">Im Automatikmodus wird die PV Ladung einphasig begonnen. Um zu viele Schaltungen zu vermeiden wird Anhand dieses Wertes definiert wann die Umschaltung erfolgen soll. Ist für durchgehend x Minuten die Maximalstromstärke erreicht, wird auf dreiphasige Ladung umgestellt. Ist die Ladung nur für ein Intervall unterhalb der Maximalstromstärke, beginnt der Counter für die Umschaltung erneut. Ist die Ladung im dreiphasigen Modus für 16 - x Minuten bei der Minimalstromstärke, wird wieder auf einphasige Ladung gewechselt. Standardmäßig ist dieser Wert bei 8 min, sprich nach 8 min Maximalstromstärke wird auf 3 Phasige Ladung umgestellt und nach 16 - 8 = 8 min bei Minimalstromstärke wird wieder auf einphasige Ladung gewechselt.</span>
+									</div>
+								</div>
+								<div class="form-row mb-1">
+									<label for="u1p3ppause" class="col-md-4 col-form-label">Pause vor und nach der Umschaltung</label>
+									<div class="col-md-8">
+										<div class="form-row vaRow mb-1">
+											<label for="u1p3ppause" class="col-2 col-form-label valueLabel" suffix="Sek"><?php echo $u1p3ppauseold; ?> Sek</label>
+											<div class="col-10">
+												<input type="range" class="form-control-range rangeInput" name="u1p3ppause" id="u1p3ppause" min="2" max="15" step="1" value="<?php echo $u1p3ppauseold; ?>">
+											</div>
+										</div>
+										<span class="form-text small">
+											Die Standardeinstellung ist 2 Sekunden. Falls ein Fahrzeug den Ladevorgang nach einer Umschaltung nicht zuverlässig startet, kann dieser Wert erhöht werden.
+											<span class="text-danger">Achtung: experimentelle Einstellung!</span>
+										</span>
 									</div>
 								</div>
 							</div>
@@ -1178,7 +1437,7 @@
 														Phase 1
 													</div>
 												</div>
-												<input type="number" min="7" max="1000" step="1" name="lastmaxap1" id="lastmaxap1" class="form-control" value="<?php echo $lastmaxap1old ?>">
+												<input type="number" min="7" step="1" name="lastmaxap1" id="lastmaxap1" class="form-control" value="<?php echo $lastmaxap1old ?>">
 											</div>
 										</div>
 										<div class="col-sm-4">
@@ -1188,7 +1447,7 @@
 														Phase 2
 													</div>
 												</div>
-												<input type="number" min="7" max="1000" step="1" name="lastmaxap2" id="lastmaxap2" class="form-control" value="<?php echo $lastmaxap2old ?>">
+												<input type="number" min="7" step="1" name="lastmaxap2" id="lastmaxap2" class="form-control" value="<?php echo $lastmaxap2old ?>">
 											</div>
 										</div>
 										<div class="col-sm-4">
@@ -1198,18 +1457,18 @@
 														Phase 3
 													</div>
 												</div>
-												<input type="number" min="7" max="1000" step="1" name="lastmaxap3" id="lastmaxap3" class="form-control" value="<?php echo $lastmaxap3old ?>">
+												<input type="number" min="7" step="1" name="lastmaxap3" id="lastmaxap3" class="form-control" value="<?php echo $lastmaxap3old ?>">
 											</div>
 										</div>
 									</div>
-									<span class="form-text small">Gültige Werte 7-125. Definiert die maximal erlaubte Stromstärke der einzelnen Phasen des <b>Hausanschlusses</b> im Sofort Laden Modus, sofern das EVU Modul die Werte je Phase zur Verfügung stellt. Hiermit ist nicht der Anschluss der openWB gemeint! Übliche Werte für ein EFH/MFH sind im Bereich 35 bis 63A.</span>
+									<span class="form-text small">Gültige Werte: ganze Zahl größer 7. Definiert die maximal erlaubte Stromstärke der einzelnen Phasen des <b>Hausanschlusses</b> im Sofort Laden Modus, sofern das EVU Modul die Werte je Phase zur Verfügung stellt. Hiermit ist nicht der Anschluss der openWB gemeint! Übliche Werte für ein EFH/MFH sind im Bereich 35 bis 63A.</span>
 								</div>
 							</div>
 							<div class="form-row mb-1">
 								<label for="lastmmaxw" class="col-md-4 col-form-label">maximaler Bezug in W</label>
 								<div class="col">
 									<input class="form-control" type="number" min="2000" max="1000000" step="1000" name="lastmmaxw" id="lastmmaxw" value="<?php echo $lastmmaxwold ?>">
-									<span class="form-text small">Gültige Werte 2000-200000. Definiert die maximal erlaubten bezogenen Watt des Hausanschlusses im Sofort Laden Modus, sofern die Bezugsleistung bekannt ist.</span>
+									<span class="form-text small">Gültige Werte: 2000-1000000W in ganzen 1000W-Schritten. Definiert die maximal erlaubten bezogenen Watt des Hausanschlusses im Sofort Laden Modus, sofern die Bezugsleistung bekannt ist.</span>
 								</div>
 							</div>
 						</div>
@@ -1321,10 +1580,6 @@
 
 
 		<script>
-			$('.rangeInput').on('input', function() {
-				// show slider value in label of class valueLabel
-				updateLabel($(this).attr('id'));
-			});
 
 			$.get(
 				{ url: "settings/navbar.html", cache: false },
@@ -1334,6 +1589,16 @@
 					$('#navAllgemein').addClass('disabled');
 				}
 			);
+
+			$(document).ready(function(){
+
+				$('.rangeInput').on('input', function() {
+					// show slider value in label of class valueLabel
+					updateLabel($(this).attr('id'));
+				});
+
+			});  // end document ready
+
 		</script>
 
 	</body>

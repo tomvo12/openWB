@@ -3,12 +3,13 @@
 OPENWBBASEDIR=$(cd `dirname $0`/../../ && pwd)
 RAMDISKDIR="$OPENWBBASEDIR/ramdisk"
 MODULEDIR=$(cd `dirname $0` && pwd)
-LOGFILE="$RAMDISKDIR/soc.log"
+DMOD="EVSOC"
+MYLOGFILE="$RAMDISKDIR/soc.log"
 CHARGEPOINT=$1
-
+myPid=$$
 socDebug=$debug
 # for developement only
-socDebug=1
+#socDebug=1
 
 
 case $CHARGEPOINT in
@@ -34,12 +35,6 @@ case $CHARGEPOINT in
 		;;
 esac
 
-socDebugLog(){
-	if (( socDebug > 0 )); then
-		timestamp=`date +"%Y-%m-%d %H:%M:%S"`
-		echo "$timestamp: Lp$CHARGEPOINT: $@" >> $LOGFILE
-	fi
-}
 
 soctimer=$(<$soctimerfile)
 ladeleistung=$(<$ladeleistungfile)
@@ -49,15 +44,21 @@ if (( ladeleistung > 500 ));then
 else
 	tmpintervall=$(( 60 * 6 ))
 fi
-	#tmpintervall=5
+if (( socDebug > 0 )); then
+	tmpintervall=6
+fi
+
 
 
 if (( soctimer < tmpintervall )); then
-	socDebugLog "Nothing to do yet. Incrementing timer. ${soctimer} < ${tmpintervall}"
+	openwbDebugLog ${DMOD} 1 "Lp$CHARGEPOINT: Nothing to do yet. Incrementing timer. ${soctimer} < ${tmpintervall}"
 	soctimer=$((soctimer+1))
 	echo $soctimer > $soctimerfile
 else
-  socDebugLog "Requesting SoC"
-  echo 0 > $soctimerfile
-  $MODULEDIR/soc.py $soc_eq_client_id $soc_eq_client_secret $soc_eq_vin $soc_file $CHARGEPOINT >>$LOGFILE
+	openwbDebugLog ${DMOD} 1 "Lp$CHARGEPOINT: Requesting SoC"
+	echo 0 > $soctimerfile
+	$MODULEDIR/soc.py $soc_eq_client_id $soc_eq_client_secret $soc_eq_vin $soc_file $CHARGEPOINT >>$MYLOGFILE 2>&1
+	ret=$?
+	openwbDebugLog ${DMOD} 1 "Lp$CHARGEPOINT: Py Return: ${ret}"
+	openwbModulePublishState "EVSOC" "${ret}" "Code: ${ret}" "$CHARGEPOINT"
 fi
