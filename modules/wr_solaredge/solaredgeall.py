@@ -7,6 +7,11 @@ import socket
 import ConfigParser
 import struct
 import binascii
+
+import imp
+util_path = os.path.abspath(os.path.join(__file__, '..', '..', 'util', 'solaredge_util.py'))
+util=imp.load_source('solaredge_util', util_path)
+
 ipaddress = str(sys.argv[1])
 try:
     slave1id = int(sys.argv[2])
@@ -28,7 +33,9 @@ batwrsame = int(sys.argv[6])
 extprodakt = int(sys.argv[7])
 
 from pymodbus.client.sync import ModbusTcpClient
-client = ModbusTcpClient(ipaddress, port=502)
+port=util.getPortNo(ipaddress)
+client = ModbusTcpClient(ipaddress, port=port)
+
 #batterie auslesen und pv leistung korrigieren
 storagepower = 0
 if batwrsame == 1:

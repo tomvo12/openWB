@@ -7,40 +7,20 @@ import socket
 import ConfigParser
 import struct
 import binascii
+
+import imp
+util_path = os.path.abspath(os.path.join(__file__, '..', '..', 'util', 'solaredge_util.py'))
+util=imp.load_source('solaredge_util', util_path)
+
 from pymodbus.client.sync import ModbusTcpClient, ConnectionException
 
 ipaddress = str(sys.argv[1])
 slaveid = int(sys.argv[2])
 
-# ModBus is configured to listen on port 502 or 1502, actual port is autodetected and cached in ramdisk
-port = 0                    # port not defined
-ramdiskInitialized = False  # assume ramdisk cache is not set
-with open('/var/www/html/openWB/ramdisk/solaredgeport', 'r') as f:
-    try:
-        port = int(f.read())
-        ramdiskInitialized = True
-    except:
-        pass    # ramdisk file does not exist, proceed with autodetection
-
-if port == 0:
-    port = 502  # try port 502 first
+port=util.getPortNo(ipaddress)
 
 client = ModbusTcpClient(ipaddress, port=port)
-try:
-    resp= client.read_holding_registers(40206,5,unit=slaveid)
-    if not ramdiskInitialized:  # if we reach this line, we were able to read ModBus registers
-        # ramdisk is not set, so persist port value now for next time
-        with open('/var/www/html/openWB/ramdisk/solaredgeport', 'w') as f:
-            f.write(str(port))
-except ConnectionException:
-    # we were unable to read registers from port 502 so try 1502 next
-    port = 1502
-    client.port = port
-    resp= client.read_holding_registers(40206,5,unit=slaveid)
-    # now it worked, persist port number in ramdisk
-    if not ramdiskInitialized:
-        with open('/var/www/html/openWB/ramdisk/solaredgeport', 'w') as f:
-            f.write(str(port))
+resp= client.read_holding_registers(40206,5,unit=slaveid)
 
 value1 = resp.registers[0] 
 all = format(value1, '04x') 

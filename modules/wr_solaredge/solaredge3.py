@@ -7,6 +7,11 @@ import socket
 import ConfigParser
 import struct
 import binascii
+
+import imp
+util_path = os.path.abspath(os.path.join(__file__, '..', '..', 'util', 'solaredge_util.py'))
+util=imp.load_source('solaredge_util', util_path)
+
 ipaddress = str(sys.argv[1])
 slave1id = int(sys.argv[2])
 slave2id = int(sys.argv[3])
@@ -15,7 +20,8 @@ batwrsame = int(sys.argv[5])
 extprodakt = int(sys.argv[6])
 
 from pymodbus.client.sync import ModbusTcpClient
-client = ModbusTcpClient(ipaddress, port=502)
+port=util.getPortNo(ipaddress)
+client = ModbusTcpClient(ipaddress, port=port)
 storagepower = 0
 if batwrsame == 1:
     rr = client.read_holding_registers(62836, 2, unit=1)
