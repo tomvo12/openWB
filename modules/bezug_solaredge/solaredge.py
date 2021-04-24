@@ -17,7 +17,7 @@ from pymodbus.client.sync import ModbusTcpClient, ConnectionException
 ipaddress = str(sys.argv[1])
 slaveid = int(sys.argv[2])
 
-port=util.getPortNo(ipaddress)
+port=util.getPortNo('bezug', ipaddress)
 
 client = ModbusTcpClient(ipaddress, port=port)
 resp= client.read_holding_registers(40206,5,unit=slaveid)

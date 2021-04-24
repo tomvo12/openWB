@@ -21,7 +21,7 @@ slave4id = int(sys.argv[6])
 extprodakt = int(sys.argv[7])
 
 from pymodbus.client.sync import ModbusTcpClient
-port=util.getPortNo(ipaddress)
+port=util.getPortNo('wr', ipaddress)
 client = ModbusTcpClient(ipaddress, port=port)
 storagepower = 0
 if batwrsame == 1:

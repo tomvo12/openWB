@@ -19,7 +19,7 @@ batwrsame = int(sys.argv[4])
 extprodakt = int(sys.argv[5])
 
 from pymodbus.client.sync import ModbusTcpClient
-port=util.getPortNo(ipaddress)
+port=util.getPortNo('wr', ipaddress)
 client = ModbusTcpClient(ipaddress, port=port)
 #batterie auslesen und pv leistung korrigieren
 storagepower = 0

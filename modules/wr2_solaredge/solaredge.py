@@ -16,7 +16,7 @@ ipaddress = str(sys.argv[1])
 slave1id = int(sys.argv[2])
 from pymodbus.client.sync import ModbusTcpClient
 
-port=util.getPortNo(ipaddress)
+port=util.getPortNo('wr2', ipaddress)
 client = ModbusTcpClient(ipaddress, port=port)
 #batterie auslesen und pv leistung korrigieren
 resp= client.read_holding_registers(40084,2,unit=slave1id)

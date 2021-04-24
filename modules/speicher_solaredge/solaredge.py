@@ -17,7 +17,7 @@ zweiterspeicher = int(sys.argv[2])
 storage2power = 0
 from pymodbus.client.sync import ModbusTcpClient
 
-port=util.getPortNo(ipaddress)
+port=util.getPortNo('speicher', ipaddress)
 client = ModbusTcpClient(ipaddress, port=port)
 
 rr = client.read_holding_registers(62836, 2, unit=1)
